@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup>
+  <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework><UseWindowsForms>true</UseWindowsForms>
+  <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><Version>1.0.0</Version>
+  <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  <AgentServerUrl Condition="'$(AgentServerUrl)'==''">https://zippy-api.onrender.com</AgentServerUrl>
+ </PropertyGroup>
+ <ItemGroup>
+  <Compile Include="Agent/**/*.cs" />
+  <AssemblyMetadata Include="ServerUrl" Value="$(AgentServerUrl)" />
+  <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.5" />
+ </ItemGroup>
+</Project>
