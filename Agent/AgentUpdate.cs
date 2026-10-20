@@ -9,7 +9,8 @@ internal static class AgentUpdate
   using var client=Protocol.Client();var manifest=await Protocol.Call<Manifest>(client,HttpMethod.Get,"agente/versao",ct:ct);
   if(manifest?.Disponivel!=true||!Version.TryParse(manifest.Versao,out var remote)||remote<=typeof(AgentUpdate).Assembly.GetName().Version||manifest.Sha256?.Length!=64||manifest.Download!="/api/v2/delivery/impressao/agente/instalador")return;
   var directory=Path.Combine(Program.DataPath,"private","updates");Directory.CreateDirectory(directory);var path=Path.Combine(directory,"ZippyPrintSetup.exe");
-  using var response=await client.GetAsync(manifest.Download,HttpCompletionOption.ResponseHeadersRead,ct);response.EnsureSuccessStatusCode();
+  using var download=Protocol.DownloadClient();using var response=await download.GetAsync(manifest.Download,HttpCompletionOption.ResponseHeadersRead,ct);
+  if(response.RequestMessage?.RequestUri?.Scheme!="https")throw new InvalidDataException("Atualização só por HTTPS.");response.EnsureSuccessStatusCode();
   if(response.Content.Headers.ContentLength>300_000_000)throw new InvalidDataException("Pacote de atualização muito grande.");
   await using(var output=File.Create(path+".tmp"))
   {

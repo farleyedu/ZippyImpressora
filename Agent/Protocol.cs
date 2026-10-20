@@ -23,6 +23,14 @@ internal static class Protocol
   if(token!=null)client.DefaultRequestHeaders.Add("X-Zippy-Station",token);
   return client;
  }
+ /// <summary>Só para baixar o instalador: o servidor redireciona para o GitHub Releases e o arquivo é grande.
+ /// Sem o token da estação (ele não pode ir para outro domínio); a integridade vem do SHA-256 do manifesto.</summary>
+ public static HttpClient DownloadClient()
+ {
+  var url=new Uri(Program.ServerUrl);
+  if(url.Scheme!="https")throw new InvalidOperationException("O agente exige HTTPS.");
+  return new HttpClient(new HttpClientHandler{AllowAutoRedirect=true,MaxAutomaticRedirections=5}){BaseAddress=url,Timeout=TimeSpan.FromMinutes(30)};
+ }
  public static async Task<T?> Call<T>(HttpClient client,HttpMethod method,string path,object? body=null,CancellationToken ct=default)
  {
   using var request=new HttpRequestMessage(method,Api+path);
